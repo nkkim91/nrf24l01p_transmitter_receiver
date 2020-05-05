@@ -262,9 +262,9 @@ static uint8_t receive_symax_x5c_data_packet(uint32_t unTimeOut)
     NRF24L01_FlushRx();
 
 #ifdef NK_RX_PKT_STAT
-    unStartTime = millis();
-    unNumValidPacket = 0;
-    unNumInvalidPacket = 0;
+//  unStartTime = millis();
+//  unNumValidPacket = 0;
+//  unNumInvalidPacket = 0;
 #endif
 
     unLastTimeStamp = millis() + RX_RF_DATA_HOPPING_PERIOD;

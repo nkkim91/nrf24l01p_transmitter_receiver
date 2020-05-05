@@ -1,5 +1,7 @@
 #ifdef NRF24L01_DRIVER
 
+#include "pin.h"
+
 /***************************************************
  *
  * nRF24L01 Driver Functions
@@ -10,9 +12,12 @@ static void CS_LO() {
   // If we assume 2Mbs data rate and 16Mhz clock, a
   // divider of 4 is the minimum we want.
   // CLK:BUS 8Mhz:2Mhz, 16Mhz:4Mhz, or 20Mhz:5Mhz
+
+#ifdef HW_SPI
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE0);
   SPI.setClockDivider(SPI_CLOCK_DIV4);
+#endif
   digitalWrite(gnNRF24L01_CSNPin,LOW);
 }
 
@@ -22,9 +27,11 @@ static void CS_HI() {
   // divider of 4 is the minimum we want.
   // CLK:BUS 8Mhz:2Mhz, 16Mhz:4Mhz, or 20Mhz:5Mhz
 
+#ifdef HW_SPI
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE0);
   SPI.setClockDivider(SPI_CLOCK_DIV4);
+#endif
   digitalWrite(gnNRF24L01_CSNPin,HIGH);
 }
 
@@ -36,8 +43,14 @@ void NRF24L01_Initialize()
 u8 NRF24L01_WriteReg(u8 reg, u8 data)
 {
   CS_LO();
+#ifdef HW_SPI
   uint8_t res = SPI.transfer( W_REGISTER | ( REGISTER_MASK & reg ) );
   SPI.transfer(data);
+#elif defined(SW_SPI)
+  uint8_t res = 0;
+  SPI_Write(W_REGISTER | (REGISTER_MASK & reg));
+  SPI_Write(data);
+#endif
   CS_HI();
   return res;
 }
@@ -45,11 +58,18 @@ u8 NRF24L01_WriteReg(u8 reg, u8 data)
 u8 NRF24L01_WriteRegisterMulti(u8 reg, const u8 data[], u8 length)
 {
     CS_LO();
+#ifdef HW_SPI
     uint8_t res = SPI.transfer(W_REGISTER | ( REGISTER_MASK & reg));
     for (u8 i = 0; i < length; i++)
     {
         SPI.transfer(data[i]);
     }
+#elif defined(SW_SPI)
+  uint8_t res = 0;
+  SPI_Write(W_REGISTER | ( REGISTER_MASK & reg));
+  for (uint8_t i = 0; i < length; i++)
+    SPI_Write(data[i]);
+#endif
     CS_HI();
     return res;
 }
@@ -57,11 +77,18 @@ u8 NRF24L01_WriteRegisterMulti(u8 reg, const u8 data[], u8 length)
 u8 NRF24L01_WritePayload(u8 *data, u8 length)
 {
     CS_LO();
+#ifdef HW_SPI
     uint8_t res = SPI.transfer(W_TX_PAYLOAD);
     for (u8 i = 0; i < length; i++)
     {
         SPI.transfer(data[i]);
     }
+#elif defined(SW_SPI)
+  uint8_t res = 0;
+  SPI_Write(W_TX_PAYLOAD);
+  for (uint8_t i = 0; i < length; i++)
+    SPI_Write(data[i]);
+#endif
     CS_HI();
     return res;
 }
@@ -69,8 +96,13 @@ u8 NRF24L01_WritePayload(u8 *data, u8 length)
 u8 NRF24L01_ReadReg(u8 reg)
 {
     CS_LO();
+#ifdef HW_SPI
     SPI.transfer(R_REGISTER | (REGISTER_MASK & reg));
     uint8_t data = SPI.transfer(0xFF);
+#elif defined(SW_SPI)
+  SPI_Write(R_REGISTER | (REGISTER_MASK & reg));
+  uint8_t data = SPI_Read();
+#endif
     CS_HI();
     return data;
 }
@@ -78,11 +110,18 @@ u8 NRF24L01_ReadReg(u8 reg)
 u8 NRF24L01_ReadRegisterMulti(u8 reg, u8 data[], u8 length)
 {
     CS_LO();
+#ifdef HW_SPI
     uint8_t res = SPI.transfer(R_REGISTER | (REGISTER_MASK & reg));
     for(u8 i = 0; i < length; i++)
     {
         data[i] = SPI.transfer(0xFF);
     }
+#elif defined(SW_SPI)
+  uint8_t res = 0;
+  SPI_Write(R_REGISTER | (REGISTER_MASK & reg));
+  for(uint8_t i = 0; i < length; i++)
+    data[i] = SPI_Read();
+#endif
     CS_HI();
     return res;
 }
@@ -90,11 +129,18 @@ u8 NRF24L01_ReadRegisterMulti(u8 reg, u8 data[], u8 length)
 u8 NRF24L01_ReadPayload(u8 *data, u8 length)
 {
     CS_LO();
+#ifdef HW_SPI
     uint8_t res = SPI.transfer(R_RX_PAYLOAD);
     for(u8 i = 0; i < length; i++)
     {
         data[i] = SPI.transfer(0xFF);
     }
+#elif defined(SW_SPI)
+  uint8_t res = 0;
+  SPI_Write(R_RX_PAYLOAD);
+  for(uint8_t i = 0; i < length; i++)
+    data[i] = SPI_Read();
+#endif
     CS_HI();
     return res;
 }
@@ -102,7 +148,12 @@ u8 NRF24L01_ReadPayload(u8 *data, u8 length)
 static u8 Strobe(u8 state)
 {
     CS_LO();
+#ifdef HW_SPI
     uint8_t res = SPI.transfer(state);
+#elif defined(SW_SPI)
+  uint8_t res = 0;
+  SPI_Write(state);
+#endif
     CS_HI();
     return res;
 }
@@ -120,8 +171,14 @@ u8 NRF24L01_FlushRx()
 u8 NRF24L01_Activate(u8 code)  /* NK */
 {
     CS_LO();
+#ifdef HW_SPI
     uint8_t res = SPI.transfer(ACTIVATE);  /* 0x50 */
     SPI.transfer(code);
+#elif defined(SW_SPI)
+  uint8_t res = 0;
+  SPI_Write(ACTIVATE);
+  SPI_Write(code);
+#endif
     CS_HI();
     return res;
 }
@@ -219,7 +276,11 @@ int NRF24L01_Reset()
 {
     NRF24L01_FlushTx();
     NRF24L01_FlushRx();
+#ifdef HW_SPI
     u8 status1 = Strobe(NOP);
+#elif defined(SW_SPI)
+    u8 status1 = Strobe(0xFF);  // NOP
+#endif
     u8 status2 = NRF24L01_ReadReg(0x07);
     NRF24L01_SetTxRxMode(TXRX_OFF);
     return (status1 == status2 && (status1 & 0x0f) == 0x0e);

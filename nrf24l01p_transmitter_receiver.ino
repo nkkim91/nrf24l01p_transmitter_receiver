@@ -9,6 +9,7 @@
 #include "printf.h"
 #include "common.h"
 #include "pitches.h"
+#include "pin.h"
 
 #include "config.h"
 #include "TX_Def.h"
@@ -354,7 +355,19 @@ void setup() {
 #endif /* JOY_BUTTON */
 
   // Initialize SPI class
+#ifdef HW_SPI
   SPI.begin();
+#elif defined(SW_SPI)
+
+  SDI_output;
+  SCLK_output;
+  NRF_CSN_output;
+  
+  NRF_CSN_on;
+  SDI_on;
+  SCLK_off;
+  
+#endif /* SW_SPI */
 
 #ifdef PROTOCOL_SYMA_X5C_TRANSMITTER_MODE
   pinMode(gnM2L_xPin, INPUT);
