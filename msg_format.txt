@@ -1,0 +1,14 @@
+1. 
+	printf("%7lu) ## NK [%s:%d] \n", millis(), __func__, __LINE__);
+	printf("%7lu) ## NK [%s:%d] Elevator : %u(0x%02x)\n", millis(), __func__, __LINE__, Channel_data[ELEVATOR], Channel_data[ELEVATOR]);
+
+	Serial.print(millis()); Serial.print(") ## NK ["); Serial.print(__func__); Serial.print(":"); Serial.print(__LINE__); Serial.print("]"); 
+	Serial.println(" Elevator : "); Serial.print(Channel_data[ELEVATOR]); Serial.print("(0x"); Serial.print(Channel_data[ELEVATOR]); Serial.println(")");
+
+2.
+	printf("%7lu) ## NK [%s:%d] [+] \n", millis(), __func__, __LINE__);
+	printf("%7lu) ## NK [%s:%d] [-] \n", millis(), __func__, __LINE__);
+
+	Serial.print(millis()); Serial.print(") ## NK ["); Serial.print(__func__); Serial.print(":"); Serial.print(__LINE__); Serial.print("]"); Serial.println(" [+]");
+	Serial.print(millis()); Serial.print(") ## NK ["); Serial.print(__func__); Serial.print(":"); Serial.print(__LINE__); Serial.print("]"); Serial.println(" [-]");
+
