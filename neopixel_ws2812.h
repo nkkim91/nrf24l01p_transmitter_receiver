@@ -20,7 +20,7 @@ typedef enum RB_LED_POS {
   RB_LED_POS_DATA_PKT = 1,
   RB_LED_POS_MSG2 = 2,
   RB_LED_POS_MSG3 = 3,
-  RB_LED_POS_MSG_MAX,
+  RB_LED_POS_MSG_MAX = 16,
 } eRB_LED_POS_t;
 
 typedef enum RB_LED_BOOT_UP_PROGRESS {

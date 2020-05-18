@@ -21,7 +21,7 @@
  ***************************************************/
 //#define NKD_SPOT  // Sporatic message
 //#define NKD_INFO  // General information
-#define NKD_DEBUG // Debugging message
+//#define NKD_DEBUG // Debugging message
 //#define NKD_DEBUG_VERBOSE // Verbose debugging message
 //#define NKD_DELTA // Debugging message for tracking difference(delta)
 //#define NKD_FUNC
@@ -335,6 +335,12 @@
 
 //#define JOY_BUTTON
 //#define EXT_BUTTON
+
+//#define NK_DEBUG_LED
+//#define NK_DEBUG_LED_PIN  (4)
+#define RAINBOW_LED
+#define RAINBOW_LED_PIN   (11)
+//#define SYMA_X5C_LED
 
 #define NRF24L01_CE_PIN   (7)
 #define NRF24L01_CSN_PIN  (8)

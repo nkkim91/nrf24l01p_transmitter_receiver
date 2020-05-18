@@ -411,6 +411,11 @@ void setup() {
   RainbowLED_DebugLight(RB_LED_POS_MSG3, RB_LED_MSG3_2); /* Red */
   RainbowLED_DebugLight(RB_LED_POS_MSG3, RB_LED_MSG3_3); /* Green */
 //  RainbowLED_DebugLight(RB_LED_POS_MSG3, RB_LED_MSG3_4); /* Off */
+
+  for(int j=4; j<16;j++) {
+    RainbowLED_DebugLight(j,1);
+  }
+
 #endif /* RAINBOW_LED */
 
 #ifdef EXT_BUTTON

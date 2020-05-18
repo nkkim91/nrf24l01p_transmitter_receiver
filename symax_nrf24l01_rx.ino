@@ -138,6 +138,11 @@ static uint8_t receive_address_packet(uint32_t unTimeOut)
             ucLockedRxTxAddr[RX_ADDR_SIZE-1-i] = packet[i];
           }
           ucRxTXAddrLockedIn = 1;
+#ifdef RAINBOW_LED
+          for(int j=4; j<16;j++) {
+            RainbowLED_DebugLight(j,0);
+          }
+#endif
           continue;
         }
 

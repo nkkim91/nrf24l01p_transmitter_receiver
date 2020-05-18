@@ -38,9 +38,6 @@ static uint32_t pre_stat_pkt_magic_error = 0;
 
 static uint32_t pre_pkt_number = 0;
 
-
-extern void RainbowLED_DebugLight(uint8_t ucLEDPos, uint8_t ucMsgId);
-
 /*
  * gstTempRxChannelPacketData -> gstRxChannelPacketData and Channel_data
  * 
