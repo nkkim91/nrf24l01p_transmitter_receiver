@@ -13,7 +13,7 @@
 // NRF24L01_CE_PIN   (7)
 // NRF24L01_CSN_PIN  (8)
 
-
+#ifdef SW_SPI
 #ifdef SW_SPI_MULTIPROTOCOL4IN1 /* Multiprotocol 4 in 1 */
 // SDIO
 #define SDI_pin   5                    //D5 = PD5
@@ -171,4 +171,5 @@ uint8_t SPI_Read(void)
   return result;
 }
 
+#endif /* SW_SPI */
 #endif /* SW_SPI_DRIVER */
