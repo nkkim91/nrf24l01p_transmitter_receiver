@@ -293,8 +293,10 @@ static uint8_t receive_symax_x5c_data_packet(uint32_t unTimeOut)
         ucCurrentChan = (ucCurrentChan + 1) % num_rf_channels;
       }
       NRF24L01_WriteReg(NRF24L01_05_RF_CH, chans[ucCurrentChan]);
-//      NRF24L01_FlushRx(); // NK - testing
-      
+#if 1 /* NK - It's necessary to detect the fifo empty status by disconnection btw. transmitter and receiver */
+      NRF24L01_FlushRx(); // NK - testing
+#endif
+
       unChSetStat[ucCurrentChan]++;
             
       unLastTimeStamp = millis() + RX_RF_DATA_HOPPING_PERIOD;  /* 32 (?) */
@@ -312,7 +314,11 @@ static uint8_t receive_symax_x5c_data_packet(uint32_t unTimeOut)
      *  and 
      * 2. RX_P_NO bit(RX data pipe number) should not valid number, not RX FIFO empty.
      */
-    if ( ucStatus & (1 << NRF24L01_07_RX_DR) && (((ucStatus >> NRF24L01_07_RX_P_NO) & 0x07) >= NRF24L01_RX_P_0 && ((ucStatus >> NRF24L01_07_RX_P_NO) & 0x07) <= NRF24L01_RX_P_5)) {
+    if ( (ucStatus & (1 << NRF24L01_07_RX_DR))
+		&& (((ucStatus >> NRF24L01_07_RX_P_NO) & 0x07) >= NRF24L01_RX_P_0)
+		&& (((ucStatus >> NRF24L01_07_RX_P_NO) & 0x07) <= NRF24L01_RX_P_5)
+//		&& (((ucStatus >> NRF24L01_07_RX_P_NO) & 0x07) != NRF24L01_RX_P_EMPTY)
+		) {
 
 #if defined(NKD_DEBUG_VERBOSE)
       printf("%7lu) ## NK [%s:%d] ucStatus : 0x%02x\n", millis(), __func__, __LINE__, ucStatus);
@@ -344,11 +350,11 @@ static uint8_t receive_symax_x5c_data_packet(uint32_t unTimeOut)
       if( (SymaxX5CRxAirData[8] == 0x00) && (SymaxX5CRxAirData[9] == SYMAX_checksum(SymaxX5CRxAirData)) ) {
 
 #if defined(NKD_DEBUG_VERBOSE)
-      printf("%7lu) ## NK [%s:%d] CH:%d] ", millis(), __func__, __LINE__, ucCurrentChan);
-      for(int i=0; i < 6; i++) {
-        printf("0x%02x ", SymaxX5CRxAirData[i]);
-      }
-      printf("\n");
+        printf("%7lu) ## NK [%s:%d] CH:%d] ", millis(), __func__, __LINE__, ucCurrentChan);
+        for(int i=0; i < 10; i++) {
+          printf("0x%02x ", SymaxX5CRxAirData[i]);
+        }
+        printf("\n");
 #endif
         noInterrupts();
         ucSymaxReceivedDataReady = 1;
@@ -429,7 +435,10 @@ static uint8_t receive_symax_x5c_data_packet(uint32_t unTimeOut)
         printf("%7lu) ## NK [%s:%d] RX Fifo empty ucStatus : 0x%02x\n", millis(), __func__, __LINE__, ucStatus);
 #endif
       }
-#if 0
+#if 0 /* NK - not sure if it's necesary here yet
+       * Looks it loses a packet while it returns and comes back
+       * Not recommended to set it here.
+       */
       noInterrupts();
       ucSymaxReceivedDataReady = 0; // Data is invalid, hence mark with invalid.
       interrupts();

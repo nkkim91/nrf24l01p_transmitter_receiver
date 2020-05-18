@@ -587,8 +587,6 @@ extern uint8_t ucSymaxReceivedDataReady;
   printf("\n");
 #endif
 
-  if( ucSymaxReceivedDataReady ) {
-
 #ifdef MOTOR_L298_NK
     motor_l298_update();
 #endif
@@ -596,11 +594,10 @@ extern uint8_t ucSymaxReceivedDataReady;
 #ifdef SERVO_WHEEL_NK
     servo_wheel_update();
 #endif
-
     // Handle the data
     ucSymaxReceivedDataReady = 0;
-  }
-#endif
+
+#endif /* defined(CONFIG_SYMA_X5C_RECEIVER_NK) || defined(CONFIG_SYMA_X5C_RECEIVER_CAR2WD_NK) */
 
 #ifdef CONFIG_HMC5883L_GY273_TRANSMITTER_NK
 
